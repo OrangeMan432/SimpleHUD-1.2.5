@@ -13,3 +13,4 @@ options.cfg
 *.un~
 .netrwhist
 dist/
+tools/.cache/
