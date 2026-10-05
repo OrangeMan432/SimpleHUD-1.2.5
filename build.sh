@@ -6,10 +6,16 @@ set -euo pipefail
 cd "$(dirname "$0")"
 
 find_java8() {
-  for cand in "${JAVA8_HOME:-}" \
+  local cand="${JAVA8_HOME:-}"
+  if [ -n "$cand" ]; then
+    [ -d "$cand" ] && cand="$cand/bin/java"
+    if [ -f "$cand" ] && [ -x "$cand" ]; then echo "$cand"; return 0; fi
+  fi
+  for cand in \
     "/c/Program Files/Java/openjdk-8u212-b03/bin/java.exe" \
-    "$HOME/.jdks/openjdk-8u212-b03/bin/java.exe"; do
-    [ -n "$cand" ] && [ -x "$cand" ] && { echo "$cand"; return 0; }
+    "$HOME/.jdks/openjdk-8u212-b03/bin/java.exe" \
+    "/usr/lib/jvm/java-8-openjdk/bin/java"; do
+    [ -f "$cand" ] && [ -x "$cand" ] && { echo "$cand"; return 0; }
   done
   if command -v java >/dev/null 2>&1 && java -version 2>&1 | grep -q '1\.8\.0'; then
     command -v java; return 0
